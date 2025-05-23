@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+
+# Variáveis de ambiente
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Uploads
+src/uploads/
+
+# Banco SQLite (se um dia usar)
+*.sqlite
+*.sqlite3
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDEs/Editors
+.vscode/
+.idea/
