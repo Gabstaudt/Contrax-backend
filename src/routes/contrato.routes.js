@@ -30,4 +30,18 @@ console.log('📎 req.file:', req.file);
   }
 });
 
+// GET /contratos – listar todos os contratos
+router.get('/', async (req, res) => {
+  try {
+    const contratos = await Contrato.findAll({
+      include: ['partes'] // incluir usuários se tiver relação
+    });
+    res.json(contratos);
+  } catch (err) {
+    console.error('Erro ao listar contratos:', err);
+    res.status(500).json({ mensagem: 'Erro ao buscar contratos', erro: err.message });
+  }
+});
+
+
 module.exports = router;

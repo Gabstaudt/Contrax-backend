@@ -3,6 +3,7 @@ const sequelize = require('../config/db');
 const Contrato = require('./contrato.model');
 const Pasta = require('./pasta.model');
 
+
 const ContratoPasta = sequelize.define('ContratoPasta', {}, {
   tableName: 'contratos_pastas',
   timestamps: true
