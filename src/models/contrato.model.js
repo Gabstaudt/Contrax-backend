@@ -4,12 +4,27 @@ const Empresa = require('./empresa.model');
 const Usuario = require('./usuario.model');
 
 const Contrato = sequelize.define('Contrato', {
-  titulo: { type: DataTypes.STRING, allowNull: false },
-  descricao: { type: DataTypes.TEXT },
-  data_upload: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-  data_vencimento: { type: DataTypes.DATE },
-  assinatura_status: { type: DataTypes.STRING },
-  arquivo_path: { type: DataTypes.TEXT }
+  nome: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  data_criacao: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  },
+  data_vencimento: {
+    type: DataTypes.DATE
+  },
+  valor: {
+    type: DataTypes.DECIMAL(10, 2)
+  },
+  status: {
+    type: DataTypes.STRING,
+    defaultValue: 'ativo' // pode ser: ativo, vencido, cancelado, etc.
+  },
+  arquivo_path: {
+    type: DataTypes.TEXT
+  }
 }, {
   tableName: 'contratos',
   timestamps: true
@@ -17,6 +32,7 @@ const Contrato = sequelize.define('Contrato', {
 
 Empresa.hasMany(Contrato);
 Contrato.belongsTo(Empresa);
+
 Contrato.belongsTo(Usuario, { as: 'criado_por' });
 
 module.exports = Contrato;

@@ -1,54 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const Usuario = require('../models/usuario.model');
+const Contrato = require('../models/contrato.model');
+const upload = require('../config/multer'); // ajuste se necessário
 
-router.post('/', async (req, res) => {
+// Criar contrato com upload de arquivo
+router.post('/', upload.single('arquivo'), async (req, res) => {
   try {
-    const novo = await Usuario.create(req.body);
-    res.status(201).json(novo);
-  } catch (err) {
-    res.status(500).json({ error: 'Erro ao criar usuário', detalhes: err.message });
-  }
+    console.log('Body:', req.body);
+    console.log('File:', req.file);
+console.log('📥 req.body:', req.body);
+console.log('📎 req.file:', req.file);
+
+   const novoContrato = await Contrato.create({
+  nome: req.body.nome,                       // ✅ campo certo
+  data_criacao: req.body.data_criacao || new Date(),
+  data_vencimento: req.body.data_vencimento,
+  valor: req.body.valor,
+  status: req.body.status,
+  arquivo_path: req.file?.path || null,
+  empresaId: 1,            // substituir com JWT depois
+  criadoPorId: 6           // substituir com JWT depois
 });
 
-router.get('/', async (req, res) => {
-  try {
-    const lista = await Usuario.findAll();
-    res.json(lista);
-  } catch (err) {
-    res.status(500).json({ error: 'Erro ao listar usuários', detalhes: err.message });
-  }
-});
 
-router.get('/:id', async (req, res) => {
-  try {
-    const item = await Usuario.findByPk(req.params.id);
-    if (!item) return res.status(404).json({ error: 'Usuário não encontrado' });
-    res.json(item);
+    res.status(201).json(novoContrato);
   } catch (err) {
-    res.status(500).json({ error: 'Erro ao buscar usuário', detalhes: err.message });
-  }
-});
-
-router.put('/:id', async (req, res) => {
-  try {
-    const item = await Usuario.findByPk(req.params.id);
-    if (!item) return res.status(404).json({ error: 'Usuário não encontrado' });
-    await item.update(req.body);
-    res.json(item);
-  } catch (err) {
-    res.status(500).json({ error: 'Erro ao atualizar usuário', detalhes: err.message });
-  }
-});
-
-router.delete('/:id', async (req, res) => {
-  try {
-    const item = await Usuario.findByPk(req.params.id);
-    if (!item) return res.status(404).json({ error: 'Usuário não encontrado' });
-    await item.destroy();
-    res.status(204).send();
-  } catch (err) {
-    res.status(500).json({ error: 'Erro ao deletar usuário', detalhes: err.message });
+    console.error('Erro ao criar contrato:', err);
+    res.status(500).json({ mensagem: 'Erro ao criar contrato', detalhes: err.message });
   }
 });
 

@@ -37,5 +37,7 @@ app.use('/pastas', require('./routes/pasta.routes'));
 app.use('/assinaturas', require('./routes/assinatura.routes'));
 app.use('/clausulas', require('./routes/clausula.routes'));
 app.use('/notificacoes', require('./routes/notificacao.routes'));
+app.use('/auth', require('./routes/auth.routes'));
+
 
 module.exports = app;
