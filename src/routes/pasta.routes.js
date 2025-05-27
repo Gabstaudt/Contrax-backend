@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Pasta = require('../models/pasta.model');
+const Contrato = require('../models/contrato.model');
+const sequelize = require('../config/db'); 
+
 
 router.post('/', async (req, res) => {
   try {
@@ -13,12 +16,27 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
   try {
-    const lista = await Pasta.findAll();
-    res.json(lista);
+    const pastas = await Pasta.findAll({
+      include: [
+        {
+          model: Contrato,
+          as: 'contratos',
+          attributes: []
+        }
+      ],
+      attributes: {
+        include: [
+          [sequelize.fn('COUNT', sequelize.col('contratos.id')), 'contratoCount']
+        ]
+      },
+      group: ['Pasta.id']
+    });
+    res.json(pastas);
   } catch (err) {
     res.status(500).json({ error: 'Erro ao listar pastas', detalhes: err.message });
   }
 });
+
 
 router.put('/:id', async (req, res) => {
   try {

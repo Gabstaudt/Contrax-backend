@@ -1,15 +1,21 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const Empresa = require('./empresa.model');
+const Contrato = require('./contrato.model');
 
 const Pasta = sequelize.define('Pasta', {
-  nome: { type: DataTypes.STRING }
+  titulo: { type: DataTypes.STRING, allowNull: false },
+  descricao: { type: DataTypes.STRING }
 }, {
   tableName: 'pastas',
   timestamps: true
 });
 
-Empresa.hasMany(Pasta);
-Pasta.belongsTo(Empresa);
+
+Pasta.hasMany(Contrato, { as: 'contratos', foreignKey: 'pastaId' });
+Contrato.belongsTo(Pasta, { as: 'pasta', foreignKey: 'pastaId' });
+
+
+
 
 module.exports = Pasta;
