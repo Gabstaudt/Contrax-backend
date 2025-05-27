@@ -3,7 +3,7 @@ const sequelize = require('../config/db');
 
 const Empresa = sequelize.define('Empresa', {
   nome: { type: DataTypes.STRING, allowNull: false },
-  cnpj: { type: DataTypes.STRING, allowNull: false, unique: true },
+  cnpj: { type: DataTypes.STRING, allowNull: false },  
   email_admin_responsavel: { type: DataTypes.STRING }
 }, {
   tableName: 'empresas',

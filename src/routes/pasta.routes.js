@@ -14,29 +14,49 @@ router.post('/', async (req, res) => {
   }
 });
 
+
 router.get('/', async (req, res) => {
   try {
     const pastas = await Pasta.findAll({
-      include: [
-        {
-          model: Contrato,
-          as: 'contratos',
-          attributes: []
-        }
-      ],
-      attributes: {
-        include: [
-          [sequelize.fn('COUNT', sequelize.col('contratos.id')), 'contratoCount']
-        ]
-      },
-      group: ['Pasta.id']
+      include: [{
+        model: Contrato,
+        through: { attributes: [] }
+      }]
     });
-    res.json(pastas);
+
+    const resultado = pastas.map(pasta => {
+      const contratos = pasta.Contratos || [];
+      const totalContratos = contratos.length;
+      const ativos = contratos.filter(c => c.status === 'ativo').length;
+      const aVencer = contratos.filter(c => {
+        const hoje = new Date();
+        const vencimento = new Date(c.data_vencimento);
+        const diasRestantes = Math.ceil((vencimento - hoje) / (1000 * 60 * 60 * 24));
+        return diasRestantes > 0 && diasRestantes <= 5;
+      }).length;
+      const vencidos = contratos.filter(c => {
+        const hoje = new Date();
+        const vencimento = new Date(c.data_vencimento);
+        return vencimento < hoje;
+      }).length;
+
+      return {
+        id: pasta.id,
+        titulo: pasta.titulo,
+        descricao: pasta.descricao,
+        totalContratos,
+        ativos,
+        aVencer,
+        vencidos
+      };
+    });
+
+    res.json(resultado);
   } catch (err) {
+    console.error('Erro ao listar pastas:', err);
     res.status(500).json({ error: 'Erro ao listar pastas', detalhes: err.message });
   }
 });
-
 
 router.put('/:id', async (req, res) => {
   try {

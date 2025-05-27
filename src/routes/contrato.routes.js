@@ -2,26 +2,30 @@ const express = require('express');
 const router = express.Router();
 const Contrato = require('../models/contrato.model');
 const upload = require('../config/multer'); // ajuste se necessário
+const ContratoPasta = require('../models/contratoPasta.model');
+
 
 // Criar contrato com upload de arquivo
 router.post('/', upload.single('arquivo'), async (req, res) => {
   try {
-    console.log('Body:', req.body);
-    console.log('File:', req.file);
-console.log('📥 req.body:', req.body);
-console.log('📎 req.file:', req.file);
+    const novoContrato = await Contrato.create({
+      nome: req.body.nome,
+      data_criacao: req.body.data_criacao || new Date(),
+      data_vencimento: req.body.data_vencimento,
+      valor: req.body.valor,
+      status: req.body.status,
+      arquivo_path: req.file?.path || null,
+      empresaId: 1,
+      criadoPorId: 6
+    });
 
-   const novoContrato = await Contrato.create({
-  nome: req.body.nome,                       // ✅ campo certo
-  data_criacao: req.body.data_criacao || new Date(),
-  data_vencimento: req.body.data_vencimento,
-  valor: req.body.valor,
-  status: req.body.status,
-  arquivo_path: req.file?.path || null,
-  empresaId: 1,            // substituir com JWT depois
-  criadoPorId: 6           // substituir com JWT depois
-});
-
+    // 👇 Verificar se foi enviada a pasta para associar
+    if (req.body.pasta) {
+      await ContratoPasta.create({
+        ContratoId: novoContrato.id,
+        PastaId: req.body.pasta
+      });
+    }
 
     res.status(201).json(novoContrato);
   } catch (err) {
